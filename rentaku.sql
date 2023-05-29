@@ -1,11 +1,11 @@
 -- phpMyAdmin SQL Dump
--- version 5.2.0
+-- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 29, 2023 at 04:30 AM
--- Server version: 10.4.27-MariaDB
--- PHP Version: 8.2.0
+-- Generation Time: May 29, 2023 at 05:21 PM
+-- Server version: 10.4.28-MariaDB
+-- PHP Version: 8.1.17
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -35,7 +35,24 @@ CREATE TABLE `partners` (
   `owner_name` varchar(150) NOT NULL,
   `phone` varchar(20) NOT NULL,
   `address` varchar(300) NOT NULL,
-  `description` varchar(500) NOT NULL
+  `description` varchar(500) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `rentals`
+--
+
+CREATE TABLE `rentals` (
+  `id_rental` int(255) NOT NULL,
+  `id_customer` int(255) NOT NULL,
+  `id_partner` int(255) NOT NULL,
+  `id_vehicle` int(255) NOT NULL,
+  `rental_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `return_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `total_cost` int(10) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -60,8 +77,17 @@ CREATE TABLE `users` (
   `ktp_face` varchar(300) DEFAULT NULL,
   `sim_a` varchar(300) DEFAULT NULL,
   `sim_c` varchar(300) DEFAULT NULL,
-  `passpor` varchar(300) DEFAULT NULL
+  `passpor` varchar(300) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updateed_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id_user`, `name_user`, `gender`, `phone`, `email`, `password`, `address`, `emergency_number`, `id_ktp`, `id_sim`, `id_paspor`, `ktp`, `ktp_face`, `sim_a`, `sim_c`, `passpor`, `created_at`, `updateed_at`) VALUES
+(1, 'Naufal Rozan', 'Pria', '083811112222', 'naufal@gmail.com', '12345678', NULL, '082211112222', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '2023-05-29 14:54:49', '2023-05-29 14:56:41');
 
 -- --------------------------------------------------------
 
@@ -75,7 +101,9 @@ CREATE TABLE `vehicles` (
   `vehicle_brand` varchar(100) NOT NULL,
   `year_vehicle` varchar(100) NOT NULL,
   `vehicle_price` int(100) NOT NULL,
-  `vehicle_location` int(150) NOT NULL
+  `status_vehicle` varchar(100) NOT NULL,
+  `vehicle_location` int(150) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -89,6 +117,15 @@ ALTER TABLE `partners`
   ADD PRIMARY KEY (`id_partner`),
   ADD KEY `id_user` (`id_user`),
   ADD KEY `id_vehicles` (`id_vehicles`);
+
+--
+-- Indexes for table `rentals`
+--
+ALTER TABLE `rentals`
+  ADD PRIMARY KEY (`id_rental`),
+  ADD KEY `id_customer` (`id_customer`),
+  ADD KEY `id_partner` (`id_partner`),
+  ADD KEY `id_vehicle` (`id_vehicle`);
 
 --
 -- Indexes for table `users`
@@ -113,10 +150,16 @@ ALTER TABLE `partners`
   MODIFY `id_partner` int(255) NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT for table `rentals`
+--
+ALTER TABLE `rentals`
+  MODIFY `id_rental` int(255) NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id_user` int(255) NOT NULL AUTO_INCREMENT;
+  MODIFY `id_user` int(255) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT for table `vehicles`
@@ -134,6 +177,14 @@ ALTER TABLE `vehicles`
 ALTER TABLE `partners`
   ADD CONSTRAINT `id_user` FOREIGN KEY (`id_user`) REFERENCES `users` (`id_user`),
   ADD CONSTRAINT `id_vehicles` FOREIGN KEY (`id_vehicles`) REFERENCES `vehicles` (`id_vehicles`);
+
+--
+-- Constraints for table `rentals`
+--
+ALTER TABLE `rentals`
+  ADD CONSTRAINT `id_customer` FOREIGN KEY (`id_customer`) REFERENCES `users` (`id_user`),
+  ADD CONSTRAINT `id_partner` FOREIGN KEY (`id_partner`) REFERENCES `partners` (`id_partner`),
+  ADD CONSTRAINT `id_vehicle` FOREIGN KEY (`id_vehicle`) REFERENCES `vehicles` (`id_vehicles`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
